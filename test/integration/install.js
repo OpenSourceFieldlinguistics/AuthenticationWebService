@@ -138,6 +138,114 @@ describe('install', () => {
     });
   });
 
+  describe('new_gamify_corpus', () => {
+    before(() => supertest(destination)
+      .get('/_all_dbs')
+      .set('Accept', 'application/json')
+      .then((res) => {
+        expect(res.body).includes('_users', JSON.stringify(res.body));
+      }));
+
+    it('should replicate new_gamify_corpus', () => {
+      const dbnameToReplicate = 'new_gamify_corpus';
+
+      return supertest(destination)
+        .post('/_replicate')
+        .set('Accept', 'application/json')
+        .send({
+          source: `${source}/${dbnameToReplicate}`,
+          target: {
+            url: `${destination}/${dbnameToReplicate}`,
+          },
+          create_target: true,
+        })
+        .then((res) => {
+          debug('res.body new_gamify_corpus', res.body);
+          expect(res.body.ok).to.equal(true);
+
+          return supertest(destination)
+            .get('/_all_dbs')
+            .set('Accept', 'application/json');
+        })
+        .then((res) => {
+          debug('res.body new_gamify_corpus after', res.body);
+          expect(res.body).includes(dbnameToReplicate);
+        });
+    });
+  });
+
+  describe('new_learnx_corpus', () => {
+    before(() => supertest(destination)
+      .get('/_all_dbs')
+      .set('Accept', 'application/json')
+      .then((res) => {
+        expect(res.body).includes('_users', JSON.stringify(res.body));
+      }));
+
+    it('should replicate new_learnx_corpus', () => {
+      const dbnameToReplicate = 'new_learnx_corpus';
+
+      return supertest(destination)
+        .post('/_replicate')
+        .set('Accept', 'application/json')
+        .send({
+          source: `${source}/${dbnameToReplicate}`,
+          target: {
+            url: `${destination}/${dbnameToReplicate}`,
+          },
+          create_target: true,
+        })
+        .then((res) => {
+          debug('res.body new_learnx_corpus', res.body);
+          expect(res.body.ok).to.equal(true);
+
+          return supertest(destination)
+            .get('/_all_dbs')
+            .set('Accept', 'application/json');
+        })
+        .then((res) => {
+          debug('res.body new_learnx_corpus after', res.body);
+          expect(res.body).includes(dbnameToReplicate);
+        });
+    });
+  });
+
+  describe('new_wordcloud_corpus', () => {
+    before(() => supertest(destination)
+      .get('/_all_dbs')
+      .set('Accept', 'application/json')
+      .then((res) => {
+        expect(res.body).includes('_users', JSON.stringify(res.body));
+      }));
+
+    it('should replicate new_wordcloud_corpus', () => {
+      const dbnameToReplicate = 'new_wordcloud_corpus';
+
+      return supertest(destination)
+        .post('/_replicate')
+        .set('Accept', 'application/json')
+        .send({
+          source: `${source}/${dbnameToReplicate}`,
+          target: {
+            url: `${destination}/${dbnameToReplicate}`,
+          },
+          create_target: true,
+        })
+        .then((res) => {
+          debug('res.body new_wordcloud_corpus', res.body);
+          expect(res.body.ok).to.equal(true);
+
+          return supertest(destination)
+            .get('/_all_dbs')
+            .set('Accept', 'application/json');
+        })
+        .then((res) => {
+          debug('res.body new_wordcloud_corpus after', res.body);
+          expect(res.body).includes(dbnameToReplicate);
+        });
+    });
+  });
+
   describe('new_testing_corpus', () => {
     before(() => supertest(destination)
       .get('/_all_dbs')
@@ -334,7 +442,7 @@ describe('install', () => {
     });
   });
 
-  describe('new_lexicon', () => {
+  describe('new_export', () => {
     before(() => supertest(destination)
       .get('/_all_dbs')
       .set('Accept', 'application/json')
@@ -342,8 +450,8 @@ describe('install', () => {
         expect(res.body).includes('_users', JSON.stringify(res.body));
       }));
 
-    it('should replicate new_lexicon', () => {
-      const dbnameToReplicate = 'new_lexicon';
+    it('should replicate new_export', () => {
+      const dbnameToReplicate = 'new_export';
 
       return supertest(destination)
         .post('/_replicate')
@@ -356,7 +464,7 @@ describe('install', () => {
           create_target: true,
         })
         .then((res) => {
-          debug('res.body new_lexicon', res.body);
+          debug('res.body new_export', res.body);
           expect(res.body.ok).to.equal(true);
 
           return supertest(destination)
@@ -364,8 +472,47 @@ describe('install', () => {
             .set('Accept', 'application/json');
         })
         .then((res) => {
-          debug('res.body new_lexicon after ', res.body);
+          debug('res.body new_export after ', res.body);
           expect(res.body).includes(dbnameToReplicate);
+        });
+    });
+  });
+
+  describe('online prototype', () => {
+    /**
+     * note: unable to login and use the prototype because it is not using https in the docker container
+     * and the app expects and requires https
+     */
+    it('should replicate prototype', () => {
+      const dbnameToReplicate = 'prototype';
+
+      return supertest(destination)
+        .post('/_replicate')
+        .set('Accept', 'application/json')
+        .send({
+          source: `${source}/${dbnameToReplicate}`,
+          target: {
+            url: `${destination}/${dbnameToReplicate}`,
+          },
+          create_target: true,
+        })
+        .then((res) => {
+          expect(res.body.ok).to.equal(true);
+
+          return supertest(destination)
+            .get(`/${dbnameToReplicate}/_design/prototype`)
+            .set('Accept', 'application/json');
+        })
+        .then((res) => {
+          debug('res.body prototype after ', res.body);
+          expect(res.body.couchapp && res.body.couchapp.name).to.equal('LingSync Prototype (has the most features of the apps)', JSON.stringify(res.body));
+
+          return supertest(destination)
+            .get(`/${dbnameToReplicate}/_design/prototype/user.html`);
+        })
+        .then((res) => {
+          debug('res.body prototype after ', res.body);
+          expect(res.status).to.equal(200);
         });
     });
   });
