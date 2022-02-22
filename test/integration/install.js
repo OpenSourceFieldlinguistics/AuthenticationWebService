@@ -19,6 +19,7 @@ if (!destination) {
 const source = process.env.SOURCE_URL;
 debug('destination', destination);
 debug('source', source);
+let adminSessionCookie;
 
 describe('install', () => {
   before(() => {
@@ -26,6 +27,20 @@ describe('install', () => {
     replay._localhosts = new Set();
     // eslint-disable-next-line no-underscore-dangle
     debug('before replay localhosts', replay._localhosts);
+
+    return supertest(destination)
+      .post('/_session')
+      .set('Accept', 'application/json')
+      .send({
+        name: 'admin',
+        password: 'none',
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        const setCookie = res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0] : res.headers['set-cookie'];
+        [adminSessionCookie] = setCookie.split(';');
+        debug('adminSessionCookie', adminSessionCookie);
+      });
   });
   after(() => {
     // eslint-disable-next-line no-underscore-dangle
@@ -37,6 +52,7 @@ describe('install', () => {
   describe('_users views', () => {
     it('should create the _users views', () => supertest(destination)
       .post('/_users')
+      .set('cookie', adminSessionCookie)
       .set('Accept', 'application/json')
       .send({
         _id: '_design/users',
@@ -70,6 +86,7 @@ describe('install', () => {
   });
 
   describe('theuserscouch', () => {
+    const usersDBname = config.usersDbConnection.dbname;
     before(() => supertest(destination)
       .get('/_all_dbs')
       .set('Accept', 'application/json')
@@ -80,17 +97,18 @@ describe('install', () => {
 
     it('should replicate theuserscouch', () => supertest(destination)
       .post('/_replicate')
+      .set('cookie', adminSessionCookie)
       .set('Accept', 'application/json')
       .send({
         source: `${source}/new_theuserscouch`,
         target: {
-          url: `${destination}/theuserscouch`,
+          url: `${destination}/${usersDBname}`,
         },
         create_target: true,
       })
       .then((res) => {
         debug('res.body theuserscouch', res.body);
-        expect(res.body.ok).to.equal(true);
+        expect(res.body.ok).to.equal(true, JSON.stringify(res.body));
 
         return supertest(destination)
           .get('/_all_dbs')
@@ -98,7 +116,7 @@ describe('install', () => {
       })
       .then((res) => {
         debug('res.body after', res.body);
-        expect(res.body).includes('theuserscouch');
+        expect(res.body).includes(usersDBname);
       }));
   });
 
@@ -115,6 +133,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/${dbnameToReplicate}`,
@@ -151,6 +170,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/${dbnameToReplicate}`,
@@ -184,6 +204,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/new_activity_feed`,
@@ -246,6 +267,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/new_activity_feed`,
@@ -311,6 +333,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/${dbnameToReplicate}`,
@@ -347,6 +370,7 @@ describe('install', () => {
 
       return supertest(destination)
         .post('/_replicate')
+        .set('cookie', adminSessionCookie)
         .set('Accept', 'application/json')
         .send({
           source: `${source}/${dbnameToReplicate}`,

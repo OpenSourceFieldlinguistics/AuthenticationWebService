@@ -53,6 +53,25 @@ To run tests against the local instance:
 $ URL=https://localhost:3183 npm test
 ```
 
+### Running tests against a local couchdb
+
+```bash
+$ npm run docker:test
+```
+
+Turn off the docker container
+```bash
+$ docker-compose stop
+$ docker-compose rm -f
+```
+
+Exec into the docker container
+
+```bash
+$ docker container list
+$ docker exec -it cda63fa5d348 /bin/bash
+```
+
 ## Release History
 * v1.16  mongoose auth & everyauth
 * v1.32  switched to couchdb

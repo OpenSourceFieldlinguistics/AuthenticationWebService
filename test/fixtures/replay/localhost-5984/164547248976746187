@@ -1,0 +1,17 @@
+POST /_session
+accept-encoding: gzip, deflate
+accept: application/json
+content-type: application/json
+authorization: Basic YWRtaW46bm9uZQ==
+body: {\"name\":\"admin\",\"password\":\"none\"}
+
+HTTP/1.1 200 OK
+cache-control: must-revalidate
+connection: close
+content-length: 46
+content-type: application/json
+date: Mon, 21 Feb 2022 19:41:29 GMT
+server: CouchDB/3.1.2 (Erlang OTP/20)
+set-cookie: AuthSession=YWRtaW46NjIxM0VBRTk6n9DpneKRQRU-qLhtmLBjnQ8gBLY; Version=1; Expires=Mon, 21-Feb-2022 19:51:29 GMT; Max-Age=600; Path=/; HttpOnly
+
+{"ok":true,"name":"admin","roles":["_admin"]}

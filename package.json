@@ -73,19 +73,21 @@
   },
   "scripts": {
     "docker:build": "docker build -t fielddb-auth .",
-    "docker:test": "curl https://raw.githubusercontent.com/FieldDB/CorpusWebService/85f0b5a8351640ddb86059fb3c9519af12222b6c/Dockerfile-couchdb -o Dockerfile-couchdb; mkdir etc; curl https://raw.githubusercontent.com/FieldDB/CorpusWebService/main/etc/local.ini -o etc/local.ini && echo 'module.exports = { usersDbConnection: { url: \"http://localhost:5984\" }};' > config/local.js&& docker-compose up -d && docker-compose logs && npm run setup && npm run test:deprecated",
+    "docker:test": "echo 'module.exports = { usersDbConnection: { url: \"http://localhost:5984\" }};' > config/local.js && docker-compose up -d && docker-compose logs && npm run setup && npm run test:deprecated",
+    "docker:test:no-cache": "echo 'module.exports = { usersDbConnection: { url: \"http://localhost:5984\" }};' > config/local.js && docker-compose build --no-cache && docker-compose up -d && docker-compose logs && npm run setup && npm run test:deprecated",
     "coverage": "NODE_ENV=test BUNYAN_LOG_LEVEL=FATAL NODE_TLS_REJECT_UNAUTHORIZED=0 nyc npm test",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint ",
     "lint:ci": "eslint .",
-    "setup": "REPLAY=bloody SOURCE_URL=${SOURCE_URL:-https://public:none@corpusdev.example.org} mocha --timeout 10000 test/integration/install.js",
+    "setup": "REPLAY=bloody SOURCE_URL=${SOURCE_URL:-https://public:none@corpusdev.example.org} mocha --timeout 20000 test/integration/install.js",
     "start": "node ./bin/www.js",
     "test": "rm db/*test.sqlite; SOURCE_URL=${SOURCE_URL:-https://public:none@corpusdev.example.org} NODE_ENV=test NODE_TLS_REJECT_UNAUTHORIZED=0 mocha --timeout 10000 --recursive test",
     "test:debug": "node-debug _mocha test/integration/oauth.js",
-    "test:deprecated": "DEBUG=${DEBUG:-lib:user} REPLAY=bloody mocha --timeout 10000 test/routes/deprecated-spec.js",
+    "test:deprecated": "DEBUG=${DEBUG:-lib:user} REPLAY=bloody mocha --timeout 15000 test/routes/deprecated-spec.js",
     "test:fielddb": "NODE_ENV=localhost jasmine-node node_modules/fielddb/tests",
     "test:production": "ls config/production.js",
     "watch": "nodemon ./bin/www.js"
   },
   "license": "Apache-2.0"
 }
+

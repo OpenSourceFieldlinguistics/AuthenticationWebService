@@ -84,8 +84,7 @@ describe('/ deprecated', () => {
               ],
             },
             info: {
-              authentication_db: '_users',
-              authentication_handlers: ['oauth', 'cookie', 'default'],
+              authentication_handlers: ['cookie', 'default'],
               authenticated: 'default',
             },
           }, 'should have roles');
@@ -147,7 +146,7 @@ describe('/ deprecated', () => {
               key: 'UserMask',
               value: 1,
             }],
-          }, 'should create the docs');
+          }, `should create the design docs for ${testUsername}-kartuli`);
         });
     });
 
@@ -258,7 +257,7 @@ describe('/ deprecated', () => {
 
   describe('/login', () => {
     before(function () {
-      this.timeout(10000);
+      this.timeout(40000);
 
       return supertest(authWebService)
         .post('/register')
@@ -474,7 +473,7 @@ describe('/ deprecated', () => {
 
   describe('/forgotpassword', () => {
     before(function () {
-      this.timeout(10000);
+      this.timeout(40000);
 
       return supertest(authWebService)
         .post('/register')
@@ -846,8 +845,7 @@ describe('/ deprecated', () => {
               ],
             },
             info: {
-              authentication_db: '_users',
-              authentication_handlers: ['oauth', 'cookie', 'default'],
+              authentication_handlers: ['cookie', 'default'],
               authenticated: 'default',
             },
           }, 'should have roles');
@@ -996,8 +994,7 @@ describe('/ deprecated', () => {
               ],
             },
             info: {
-              authentication_db: '_users',
-              authentication_handlers: ['oauth', 'cookie', 'default'],
+              authentication_handlers: ['cookie', 'default'],
               authenticated: 'default',
             },
           }, 'should have roles');
@@ -1316,7 +1313,7 @@ describe('/ deprecated', () => {
     before(function () {
       debug('/forgotpassword', process.env.REPLAY);
 
-      this.timeout(10000);
+      this.timeout(40000);
 
       return supertest(authWebService)
         .post('/register')
@@ -1436,7 +1433,7 @@ describe('/ deprecated', () => {
               key: 'UserMask',
               value: 1,
             }],
-          }, 'should create the docs');
+          }, `should create the design docs for ${expectedDBName}`);
         });
     });
 
@@ -1513,7 +1510,7 @@ describe('/ deprecated', () => {
     before(function () {
       debug('/forgotpassword', process.env.REPLAY);
 
-      this.timeout(10000);
+      this.timeout(40000);
       return supertest(authWebService)
         .post('/register')
         .set('x-request-id', `${requestId}-prep-syncDetails`)
